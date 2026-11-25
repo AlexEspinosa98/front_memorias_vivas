@@ -19,7 +19,14 @@ import {
 } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import type { Consent, Story } from "@/lib/types";
+import type { CareReview, Consent, Story } from "@/lib/types";
+
+const TIPO_HALLAZGO: Record<string, string> = {
+  lugar: "Lugar que puede ser sagrado",
+  practica: "Práctica ceremonial",
+  saber: "Saber reservado",
+  persona: "Palabras atribuidas a una persona",
+};
 
 interface ConsentDraft extends Record<string, unknown> {
   granted_by_name: string;
@@ -42,6 +49,7 @@ export default function RevisionPage() {
   const { user, loading, canModerate } = useAuth();
   const [stories, setStories] = useState<Story[] | null>(null);
   const [consents, setConsents] = useState<Record<number, Consent[]>>({});
+  const [reviews, setReviews] = useState<Record<number, CareReview>>({});
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [drafts, setDrafts] = useState<Record<number, ConsentDraft>>({});
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +76,21 @@ export default function RevisionPage() {
         })
       );
       setConsents(Object.fromEntries(entries));
+
+      const revisiones = await Promise.all(
+        page.results.map(async (story) => {
+          try {
+            return [story.id, await api.careReview(story.id)] as const;
+          } catch {
+            return [story.id, null] as const;
+          }
+        })
+      );
+      setReviews(
+        Object.fromEntries(
+          revisiones.filter((e): e is [number, CareReview] => e[1] !== null)
+        )
+      );
     } catch (err) {
       setError((err as Error).message);
     }
@@ -175,6 +198,51 @@ export default function RevisionPage() {
 
                 {story.summary && (
                   <p className="text-sm text-sierra-700">{story.summary}</p>
+                )}
+
+                {reviews[story.id]?.resumen && (
+                  <section className="rounded-xl border border-sierra-300 bg-sierra-50 p-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-sm font-semibold">
+                        Nota del revisor de cuidado cultural
+                      </h3>
+                      <Badge
+                        tone={
+                          reviews[story.id].hallazgos.length ? "warn" : "neutral"
+                        }
+                      >
+                        {reviews[story.id].hallazgos.length
+                          ? `${reviews[story.id].hallazgos.length} para verificar`
+                          : "sin señalamientos"}
+                      </Badge>
+                    </div>
+
+                    <p className="mt-2 text-sm text-sierra-700">
+                      {reviews[story.id].resumen}
+                    </p>
+
+                    {reviews[story.id].hallazgos.length > 0 && (
+                      <ul className="mt-3 space-y-1.5 text-sm">
+                        {reviews[story.id].hallazgos.map((h, index) => (
+                          <li key={index} className="border-l-2 border-tierra-300 pl-3">
+                            <strong>{TIPO_HALLAZGO[h.tipo] ?? h.tipo}</strong>
+                            {h.fragmento && <> — «{h.fragmento}»</>}
+                            {h.por_que && (
+                              <span className="block text-xs text-sierra-600">
+                                {h.por_que}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <p className="mt-3 text-xs text-sierra-500">
+                      El revisor señala, no decide: la publicación sigue siendo
+                      suya. Solo busca lo que la comunidad le enseñó a buscar, así
+                      que no reemplaza su lectura.
+                    </p>
+                  </section>
                 )}
 
                 {hasConsent ? (

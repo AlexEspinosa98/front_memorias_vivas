@@ -207,6 +207,8 @@ export const api = {
       body: payload,
     }),
   mapPoints: () => request<import("./types").MapPoint[]>("/historias/mapa/"),
+  careReview: (id: number) =>
+    request<import("./types").CareReview>(`/historias/${id}/revision-ia/`),
 
   // --- comentarios ---
   comments: (storyId: number) =>

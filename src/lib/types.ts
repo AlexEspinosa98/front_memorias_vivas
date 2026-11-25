@@ -110,6 +110,21 @@ export interface Consent {
   conditions?: string;
 }
 
+export interface CareFinding {
+  tipo: "lugar" | "practica" | "saber" | "persona" | string;
+  fragmento: string;
+  por_que: string;
+  origen: "reglas" | "gemini" | string;
+}
+
+export interface CareReview {
+  activo: boolean;
+  resumen: string | null;
+  hallazgos: CareFinding[];
+  proveedor?: string;
+  fecha?: string;
+}
+
 export interface StoryDetail extends Story {
   body: string;
   media: MediaItem[];
