@@ -185,17 +185,28 @@ export function StoryCard({
 }) {
   const liked = Boolean(story.my_reaction);
   return (
-    <article className="overflow-hidden rounded-xl border border-sierra-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-      {story.cover && (
+    // `h-full` + columna: así todas las tarjetas de una fila miden lo mismo,
+    // tengan imagen o no, y el pie queda alineado abajo con `mt-auto`.
+    <article className="flex h-full flex-col overflow-hidden rounded-xl border border-sierra-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+      {story.cover ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={story.cover}
-          alt=""
-          className="h-44 w-full object-cover"
+          alt={story.title}
+          className="aspect-[3/2] w-full bg-sierra-100 object-cover"
           loading="lazy"
         />
+      ) : (
+        <div
+          className="flex aspect-[3/2] w-full items-center justify-center bg-sierra-100 px-4 text-center text-xs text-sierra-500"
+          aria-hidden
+        >
+          {story.is_sensitive
+            ? "Sin imagen: contenido sensible"
+            : "Sin imagen"}
+        </div>
       )}
-      <div className="space-y-3 p-5">
+      <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex flex-wrap items-center gap-2">
           <Badge>{KIND_LABEL[story.kind] ?? story.kind}</Badge>
           <VisibilityBadge value={story.visibility} />
@@ -255,7 +266,7 @@ export function StoryCard({
           </ul>
         )}
 
-        <div className="flex items-center gap-4 border-t border-sierra-100 pt-3 text-sm">
+        <div className="mt-auto flex items-center gap-4 border-t border-sierra-100 pt-3 text-sm">
           <button
             type="button"
             onClick={() => onLike?.(story)}
