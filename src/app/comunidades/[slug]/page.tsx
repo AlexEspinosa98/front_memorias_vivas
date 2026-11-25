@@ -87,7 +87,9 @@ export default function ComunidadPage() {
     setBusy(true);
     try {
       await api.decideMembership(slug, membership.id, status);
-      setMembers(await api.communityMembers(slug));
+      // Recarga la comunidad entera, no solo la lista: el conteo de miembros
+      // del encabezado también cambia al aceptar o rechazar.
+      await load();
     } catch (err) {
       setError((err as Error).message);
     } finally {

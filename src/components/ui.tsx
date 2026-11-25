@@ -163,7 +163,13 @@ export function ErrorBox({ children }: { children: ReactNode }) {
 
 export function formatDate(value: string | null): string {
   if (!value) return "";
-  return new Date(value).toLocaleDateString("es-CO", {
+  // Una fecha sin hora («2026-11-25», como las de autorización o visita) se
+  // interpreta como medianoche UTC; al mostrarla en hora de Colombia (UTC-5)
+  // retrocede un día. Se ancla al mediodía para que la fecha no se mueva.
+  const soloFecha = /^\d{4}-\d{2}-\d{2}$/.test(value);
+  const fecha = new Date(soloFecha ? `${value}T12:00:00` : value);
+  if (Number.isNaN(fecha.getTime())) return "";
+  return fecha.toLocaleDateString("es-CO", {
     day: "numeric",
     month: "long",
     year: "numeric",
