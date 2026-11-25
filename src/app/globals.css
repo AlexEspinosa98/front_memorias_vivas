@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  /* Paleta: el blanco de las prendas, la tierra y el verde de la Sierra. */
+  --color-sierra-50: #f7f6f2;
+  --color-sierra-100: #eceade;
+  --color-sierra-200: #d9d5c2;
+  --color-sierra-300: #bdb79c;
+  --color-sierra-400: #9c9375;
+  --color-sierra-500: #7d745b;
+  --color-sierra-600: #635b47;
+  --color-sierra-700: #4a442f;
+  --color-sierra-800: #332f21;
+  --color-sierra-900: #1f1c14;
+
+  --color-monte-50: #f1f6f1;
+  --color-monte-100: #dcebdc;
+  --color-monte-300: #96bd96;
+  --color-monte-500: #4f7d52;
+  --color-monte-600: #3d6440;
+  --color-monte-700: #2f4d32;
+
+  --color-tierra-100: #f6e7dc;
+  --color-tierra-300: #d9a981;
+  --color-tierra-500: #b3713f;
+  --color-tierra-600: #91582f;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background-color: var(--color-sierra-50);
+  color: var(--color-sierra-900);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+.serif {
+  font-family: var(--font-serif);
+}
+
+/* Texto largo de relatos y secciones del archivo. */
+.prosa {
+  line-height: 1.75;
+}
+.prosa p {
+  margin-bottom: 1rem;
+}
+.prosa p:last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
