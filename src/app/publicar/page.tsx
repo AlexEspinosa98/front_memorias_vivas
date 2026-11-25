@@ -62,13 +62,6 @@ function PublicarContenido() {
     allow_comments: true,
     tags: "",
   });
-  const [consent, setConsent] = useState({
-    granted_by_name: "",
-    granted_by_role: "",
-    scope: "comunidad",
-    granted_on: new Date().toISOString().slice(0, 10),
-    conditions: "",
-  });
   const [story, setStory] = useState<StoryDetail | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<string | null>(null);
@@ -150,29 +143,15 @@ function PublicarContenido() {
     }
   };
 
-  const addConsent = async () => {
+  const sendToReview = async () => {
     const target = story ?? (await save());
     if (!target) return;
     setSaving(true);
     try {
-      await api.addConsent(target.id, consent);
-      setStory(await api.story(target.id));
-      setMessage("Autorización registrada. Ya se puede enviar a revisión.");
-    } catch (err) {
-      if (err instanceof ApiError) setErrors(err.fieldErrors());
-      else setErrors({ detail: (err as Error).message });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const sendToReview = async () => {
-    if (!story) return;
-    setSaving(true);
-    try {
-      setStory(await api.sendToReview(story.id));
+      setStory(await api.sendToReview(target.id));
       setMessage(
-        "Enviado a revisión de la comunidad. Una autoridad decidirá si se publica."
+        "Enviado a revisión. La autoridad de su comunidad registrará la " +
+          "autorización y decidirá si se publica."
       );
     } catch (err) {
       setErrors({ detail: (err as Error).message });
@@ -180,8 +159,6 @@ function PublicarContenido() {
       setSaving(false);
     }
   };
-
-  const hasConsent = (story?.consents.length ?? 0) > 0;
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -391,80 +368,25 @@ function PublicarContenido() {
         </div>
       </section>
 
-      <section className="space-y-5 rounded-xl border border-monte-300 bg-monte-50 p-6">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="font-semibold">4. Autorización de la comunidad</h2>
-          {hasConsent && <Badge tone="ok">Registrada</Badge>}
-        </div>
-        <p className="text-sm text-sierra-700">
-          Sin este registro la historia no se puede publicar. Indique quién autoriza y en
-          qué calidad.
+      <section className="space-y-3 rounded-xl border border-monte-300 bg-monte-50 p-6">
+        <h2 className="font-semibold">4. Qué pasa después</h2>
+        <ol className="space-y-2 text-sm text-sierra-700">
+          <li>
+            <strong>1.</strong> Guarda el borrador y lo envía a revisión.
+          </li>
+          <li>
+            <strong>2.</strong> La autoridad de su comunidad, o la administración del
+            archivo, registra <strong>quién autoriza</strong> el contenido, en qué
+            calidad, con qué alcance y bajo qué condiciones.
+          </li>
+          <li>
+            <strong>3.</strong> Con esa autorización registrada, decide si se publica.
+          </li>
+        </ol>
+        <p className="text-sm text-sierra-600">
+          Quien escribe una historia no certifica su propio permiso: por eso la
+          autorización no se diligencia aquí. Sin ella, la plataforma no deja publicar.
         </p>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Quién autoriza" error={errors.granted_by_name}>
-            <input
-              className={inputClass}
-              value={consent.granted_by_name}
-              onChange={(event) =>
-                setConsent({ ...consent, granted_by_name: event.target.value })
-              }
-            />
-          </Field>
-          <Field
-            label="En qué calidad"
-            hint="Mamo, Cabildo Gobernador, la persona del relato…"
-          >
-            <input
-              className={inputClass}
-              value={consent.granted_by_role}
-              onChange={(event) =>
-                setConsent({ ...consent, granted_by_role: event.target.value })
-              }
-            />
-          </Field>
-          <Field label="Alcance autorizado">
-            <select
-              className={inputClass}
-              value={consent.scope}
-              onChange={(event) => setConsent({ ...consent, scope: event.target.value })}
-            >
-              <option value="abierto">Divulgación abierta</option>
-              <option value="comunidad">Solo dentro de la comunidad</option>
-              <option value="consulta">Solo consulta interna</option>
-            </select>
-          </Field>
-          <Field label="Fecha de la autorización">
-            <input
-              type="date"
-              className={inputClass}
-              value={consent.granted_on}
-              onChange={(event) =>
-                setConsent({ ...consent, granted_on: event.target.value })
-              }
-            />
-          </Field>
-        </div>
-        <Field
-          label="Condiciones de uso"
-          hint="Restricciones indicadas por la comunidad: no reproducir el audio, no mapear…"
-        >
-          <textarea
-            className={inputClass}
-            rows={2}
-            value={consent.conditions}
-            onChange={(event) =>
-              setConsent({ ...consent, conditions: event.target.value })
-            }
-          />
-        </Field>
-        <Button
-          variant="ghost"
-          onClick={addConsent}
-          disabled={saving || !consent.granted_by_name.trim()}
-        >
-          Registrar autorización
-        </Button>
       </section>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-sierra-200 pt-6">
@@ -474,10 +396,7 @@ function PublicarContenido() {
         <Button
           variant="ghost"
           onClick={sendToReview}
-          disabled={saving || !story || !hasConsent}
-          title={
-            !hasConsent ? "Primero registre la autorización de la comunidad" : undefined
-          }
+          disabled={saving || !form.title.trim() || sensitiveConflict}
         >
           Enviar a revisión
         </Button>

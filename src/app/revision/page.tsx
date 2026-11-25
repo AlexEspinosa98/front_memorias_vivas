@@ -10,6 +10,7 @@ import {
   CareNote,
   Empty,
   ErrorBox,
+  Field,
   KIND_LABEL,
   Spinner,
   VisibilityBadge,
@@ -20,14 +21,38 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { Consent, Story } from "@/lib/types";
 
+interface ConsentDraft extends Record<string, unknown> {
+  granted_by_name: string;
+  granted_by_role: string;
+  scope: string;
+  granted_on: string;
+  conditions: string;
+}
+
+const emptyDraft = (): ConsentDraft => ({
+  granted_by_name: "",
+  granted_by_role: "",
+  scope: "comunidad",
+  granted_on: new Date().toISOString().slice(0, 10),
+  conditions: "",
+});
+
 export default function RevisionPage() {
   const router = useRouter();
   const { user, loading, canModerate } = useAuth();
   const [stories, setStories] = useState<Story[] | null>(null);
   const [consents, setConsents] = useState<Record<number, Consent[]>>({});
   const [notes, setNotes] = useState<Record<number, string>>({});
+  const [drafts, setDrafts] = useState<Record<number, ConsentDraft>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const draftFor = (id: number): ConsentDraft => drafts[id] ?? emptyDraft();
+  const setDraft = (id: number, patch: Partial<ConsentDraft>) =>
+    setDrafts((current) => ({
+      ...current,
+      [id]: { ...draftFor(id), ...patch },
+    }));
 
   const load = useCallback(async () => {
     try {
@@ -65,6 +90,21 @@ export default function RevisionPage() {
       </Empty>
     );
   }
+
+  const registerConsent = async (story: Story) => {
+    const draft = draftFor(story.id);
+    setBusy(true);
+    setError(null);
+    try {
+      await api.addConsent(story.id, draft);
+      setConsents({ ...consents, [story.id]: await api.consents(story.id) });
+      setDrafts((current) => ({ ...current, [story.id]: emptyDraft() }));
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const act = async (story: Story, action: "publicar" | "rechazar") => {
     setBusy(true);
@@ -153,10 +193,85 @@ export default function RevisionPage() {
                     ))}
                   </ul>
                 ) : (
-                  <ErrorBox>
-                    No se puede publicar: falta el registro de la autorización de la
-                    comunidad.
-                  </ErrorBox>
+                  <div className="space-y-4 rounded-xl border border-tierra-300 bg-tierra-100/40 p-4">
+                    <div>
+                      <h3 className="font-semibold">Registrar la autorización</h3>
+                      <p className="mt-1 text-sm text-sierra-700">
+                        Sin este registro la plataforma no deja publicar. Anote quién
+                        autorizó el contenido y bajo qué condiciones, tal como lo dijo
+                        la comunidad.
+                      </p>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label="Quién autoriza">
+                        <input
+                          className={inputClass}
+                          placeholder="Nombre de la persona o autoridad"
+                          value={draftFor(story.id).granted_by_name}
+                          onChange={(event) =>
+                            setDraft(story.id, { granted_by_name: event.target.value })
+                          }
+                        />
+                      </Field>
+                      <Field
+                        label="En qué calidad"
+                        hint="Mamo, Cabildo Gobernador, la persona del relato…"
+                      >
+                        <input
+                          className={inputClass}
+                          value={draftFor(story.id).granted_by_role}
+                          onChange={(event) =>
+                            setDraft(story.id, { granted_by_role: event.target.value })
+                          }
+                        />
+                      </Field>
+                      <Field label="Alcance autorizado">
+                        <select
+                          className={inputClass}
+                          value={draftFor(story.id).scope}
+                          onChange={(event) =>
+                            setDraft(story.id, { scope: event.target.value })
+                          }
+                        >
+                          <option value="abierto">Divulgación abierta</option>
+                          <option value="comunidad">Solo dentro de la comunidad</option>
+                          <option value="consulta">Solo consulta interna</option>
+                        </select>
+                      </Field>
+                      <Field label="Fecha de la autorización">
+                        <input
+                          type="date"
+                          className={inputClass}
+                          value={draftFor(story.id).granted_on}
+                          onChange={(event) =>
+                            setDraft(story.id, { granted_on: event.target.value })
+                          }
+                        />
+                      </Field>
+                    </div>
+
+                    <Field
+                      label="Condiciones de uso"
+                      hint="No reproducir el audio, no mapear, no usar fuera de la comunidad…"
+                    >
+                      <textarea
+                        rows={2}
+                        className={inputClass}
+                        value={draftFor(story.id).conditions}
+                        onChange={(event) =>
+                          setDraft(story.id, { conditions: event.target.value })
+                        }
+                      />
+                    </Field>
+
+                    <Button
+                      onClick={() => registerConsent(story)}
+                      disabled={busy || !draftFor(story.id).granted_by_name.trim()}
+                    >
+                      Registrar autorización
+                    </Button>
+                  </div>
                 )}
 
                 <label className="block">
