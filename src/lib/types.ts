@@ -125,6 +125,18 @@ export interface CareReview {
   fecha?: string;
 }
 
+export interface AssistantSource {
+  numero: number;
+  titulo: string;
+  url: string;
+}
+
+export interface AssistantAnswer {
+  estado: "respondida" | "vedada" | "sin_datos" | "no_disponible" | "limite";
+  respuesta: string;
+  fuentes: AssistantSource[];
+}
+
 export interface StoryDetail extends Story {
   body: string;
   media: MediaItem[];

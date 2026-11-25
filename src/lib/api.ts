@@ -207,6 +207,13 @@ export const api = {
       body: payload,
     }),
   mapPoints: () => request<import("./types").MapPoint[]>("/historias/mapa/"),
+  // --- asistente ---
+  ask: (pregunta: string) =>
+    request<import("./types").AssistantAnswer>("/asistente/", {
+      method: "POST",
+      body: { pregunta },
+    }),
+
   careReview: (id: number) =>
     request<import("./types").CareReview>(`/historias/${id}/revision-ia/`),
 
