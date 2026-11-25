@@ -66,6 +66,50 @@ export default function MapaPage() {
         divulgan en este archivo.
       </CareNote>
 
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Mapa de referencia del territorio</h2>
+        <figure className="overflow-hidden rounded-xl border border-sierra-200 bg-white">
+          <a
+            href="/mapa-resguardos-snsm.jpg"
+            target="_blank"
+            rel="noreferrer"
+            title="Abrir el mapa en tamaño completo"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/mapa-resguardos-snsm.jpg"
+              alt="Mapa de resguardos indígenas y figuras ambientales de la Sierra Nevada de Santa Marta: resguardos, Línea Negra, reserva forestal de la Ley 2 de 1959, parques nacionales naturales y corporaciones autónomas regionales."
+              width={2000}
+              height={1460}
+              className="w-full bg-white object-contain"
+            />
+          </a>
+          <figcaption className="space-y-2 border-t border-sierra-100 px-4 py-3 text-sm">
+            <p className="font-medium">
+              Figura 3. Mapa de resguardos indígenas y figuras ambientales de la Sierra
+              Nevada de Santa Marta
+            </p>
+            <p className="text-xs text-sierra-500">
+              Nota. Mapa de delimitación de resguardos indígenas, reservas forestales,
+              parques nacionales naturales y corporaciones autónomas regionales de la
+              Sierra Nevada de Santa Marta. Fuente temática: Consejo Territorial de
+              Cabildos de la Sierra Nevada de Santa Marta (2015); base cartográfica:
+              Instituto Geográfico Agustín Codazzi (IGAC).
+            </p>
+            <p className="text-xs text-sierra-500">
+              Fuente de apoyo: Procuraduría General de la Nación,{" "}
+              <em>Caracterización general del pueblo indígena Arhuaco</em>; Ministerio de
+              Cultura, caracterización Iku; Decreto 0514 de 2026.
+            </p>
+            <p className="text-xs text-sierra-400">
+              Toque la imagen para verla en tamaño completo.
+            </p>
+          </figcaption>
+        </figure>
+      </section>
+
+      <h2 className="text-lg font-semibold">Historias ubicadas</h2>
+
       {inBounds.length === 0 ? (
         <Empty title="No hay ubicaciones para mostrar">
           Puede que existan historias con lugar, pero sin coordenadas o marcadas como
