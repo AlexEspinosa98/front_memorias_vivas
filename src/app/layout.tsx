@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import Nav from "@/components/Nav";
 import { AuthProvider } from "@/lib/auth";
@@ -41,6 +42,11 @@ export default function RootLayout({
               <p className="text-xs text-sierra-500">
                 Algunos saberes pueden ser colectivos, restringidos o reservados; no se
                 graban, transcriben ni publican sin consentimiento.
+              </p>
+              <p className="pt-2">
+                <Link href="/acerca" className="text-monte-700 underline">
+                  Acerca del archivo, criterios de cuidado cultural y fuentes
+                </Link>
               </p>
             </div>
           </footer>

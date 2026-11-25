@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/archivo", label: "Archivo" },
   { href: "/comunidades", label: "Comunidades" },
   { href: "/mapa", label: "Mapa" },
+  { href: "/acerca", label: "Acerca de" },
 ];
 
 export default function Nav() {

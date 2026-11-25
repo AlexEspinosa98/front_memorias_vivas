@@ -50,6 +50,12 @@ export default function Inicio() {
             >
               Recorrer el archivo
             </Link>
+            <Link
+              href="/acerca"
+              className="rounded-lg px-5 py-2.5 text-sm font-medium text-monte-700 underline hover:text-monte-600"
+            >
+              Acerca del archivo
+            </Link>
             {!user && (
               <Link
                 href="/registro"
