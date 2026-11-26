@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -40,6 +41,14 @@ export default function RegistroPage() {
   return (
     <div className="mx-auto max-w-md space-y-6">
       <header className="space-y-1">
+        <Image
+          src="/logo-emblema.png"
+          alt=""
+          width={512}
+          height={512}
+          priority
+          className="mb-3 h-16 w-16"
+        />
         <h1 className="text-2xl font-semibold">Crear una cuenta</h1>
         <p className="text-sm text-sierra-600">
           Con una cuenta puede ver el contenido para personas registradas, comentar y

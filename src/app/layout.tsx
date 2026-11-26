@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import Nav from "@/components/Nav";
@@ -10,6 +11,14 @@ export const metadata: Metadata = {
   title: "Memorias Vivas · Un puente entre generaciones",
   description:
     "Archivo digital y muro comunitario del pueblo Arhuaco (Iku). Los contenidos se publican solo con autorización de la comunidad.",
+  openGraph: {
+    title: "Memorias Vivas · Un puente entre generaciones",
+    description:
+      "Archivo digital y muro comunitario del pueblo Arhuaco (Iku). Los contenidos se publican solo con autorización de la comunidad.",
+    locale: "es_CO",
+    type: "website",
+    images: [{ url: "/logo-memorias-vivas.png", width: 886, height: 1024 }],
+  },
 };
 
 export default function RootLayout({
@@ -31,7 +40,14 @@ export default function RootLayout({
           </main>
           <footer className="mt-16 border-t border-sierra-200 bg-white/60">
             <div className="mx-auto max-w-6xl space-y-2 px-4 py-8 text-sm text-sierra-600">
-              <p className="font-medium text-sierra-800">
+              <p className="flex items-center gap-2.5 font-medium text-sierra-800">
+                <Image
+                  src="/logo-emblema.png"
+                  alt=""
+                  width={512}
+                  height={512}
+                  className="h-8 w-8 shrink-0"
+                />
                 Memorias Vivas · Proyecto ALUNA IA
               </p>
               <p>

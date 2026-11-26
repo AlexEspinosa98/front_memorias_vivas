@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -24,7 +25,8 @@ export default function Inicio() {
   return (
     <div className="space-y-12">
       <section className="overflow-hidden rounded-2xl border border-sierra-200 bg-white">
-        <div className="space-y-5 px-6 py-10 sm:px-10 sm:py-14">
+        <div className="grid items-center gap-8 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[minmax(0,1fr)_260px]">
+        <div className="space-y-5">
           <p className="text-xs font-medium tracking-widest text-tierra-500 uppercase">
             Pueblo indígena Arhuaco (Iku) · Sierra Nevada de Santa Marta
           </p>
@@ -65,6 +67,15 @@ export default function Inicio() {
               </Link>
             )}
           </div>
+        </div>
+          <Image
+            src="/logo-memorias-vivas.png"
+            alt="Memorias Vivas · Un puente entre generaciones · Proyecto ALUNA IA · Pueblo Arhuaco"
+            width={886}
+            height={1024}
+            priority
+            className="mx-auto hidden h-auto w-56 lg:block"
+          />
         </div>
       </section>
 

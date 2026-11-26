@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -26,16 +27,27 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-20 border-b border-sierra-200 bg-sierra-50/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-        <Link href="/" className="shrink-0">
-          <span className="serif block text-lg leading-tight font-semibold">
-            Memorias Vivas
-          </span>
-          <span className="block text-xs text-sierra-500">
-            Un puente entre generaciones
-          </span>
+        <Link href="/" className="shrink-0" aria-label="Memorias Vivas, inicio">
+          {/* En pantallas angostas solo cabe el emblema; desde sm, el logo completo. */}
+          <Image
+            src="/logo-emblema.png"
+            alt=""
+            width={512}
+            height={512}
+            priority
+            className="h-10 w-10 sm:hidden"
+          />
+          <Image
+            src="/logo-horizontal.png"
+            alt="Memorias Vivas · Un puente entre generaciones"
+            width={1145}
+            height={240}
+            priority
+            className="hidden h-10 w-auto sm:block lg:h-11"
+          />
         </Link>
 
-        <nav aria-label="Principal" className="ml-auto hidden items-center gap-1 md:flex">
+        <nav aria-label="Principal" className="ml-auto hidden items-center gap-1 lg:flex">
           {links.map((link) => {
             const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
             return (
@@ -55,7 +67,7 @@ export default function Nav() {
           })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
+        <div className="ml-auto flex items-center gap-2 lg:ml-0">
           {user ? (
             <>
               <Link
@@ -88,7 +100,7 @@ export default function Nav() {
               </Link>
               <Link
                 href="/registro"
-                className="rounded-lg bg-monte-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-monte-700"
+                className="hidden rounded-lg bg-monte-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-monte-700 sm:inline-block"
               >
                 Crear cuenta
               </Link>
@@ -99,7 +111,7 @@ export default function Nav() {
             aria-expanded={open}
             aria-label="Menú"
             onClick={() => setOpen((value) => !value)}
-            className="rounded-lg border border-sierra-300 px-2 py-1.5 text-sm md:hidden"
+            className="rounded-lg border border-sierra-300 px-2 py-1.5 text-sm lg:hidden"
           >
             ☰
           </button>
@@ -107,7 +119,7 @@ export default function Nav() {
       </div>
 
       {open && (
-        <nav aria-label="Principal (móvil)" className="border-t border-sierra-200 md:hidden">
+        <nav aria-label="Principal (móvil)" className="border-t border-sierra-200 lg:hidden">
           <ul className="mx-auto max-w-6xl px-4 py-2">
             {[...links, ...(user ? [{ href: "/publicar", label: "Publicar" }, { href: "/perfil", label: "Mi perfil" }] : [])].map(
               (link) => (
